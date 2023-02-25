@@ -96,10 +96,10 @@ uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
 
 [[deps.Notcurses_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Ncurses_jll", "Pkg", "libdeflate_jll", "libunistring_jll"]
-git-tree-sha1 = "20dc559a37f2d7702644983b79a6624df4d4e25b"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Ncurses_jll", "libdeflate_jll", "libunistring_jll"]
+git-tree-sha1 = "1b68cf09ff56dd321e5dd9a587f9df44cda57333"
 uuid = "56927b6a-812d-5b37-a4c6-b46ab6359194"
-version = "3.0.2+1"
+version = "3.0.9+0"
 
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
