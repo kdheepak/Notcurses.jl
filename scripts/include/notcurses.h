@@ -12,9 +12,10 @@
 #include <signal.h>
 #include <limits.h>
 #include <stdbool.h>
-#include <notcurses/ncport.h>
-#include <notcurses/nckeys.h>
-#include <notcurses/ncseqs.h>
+
+#include <ncport.h>
+#include <nckeys.h>
+#include <ncseqs.h>
 
 #ifdef __cplusplus
 extern "C" {

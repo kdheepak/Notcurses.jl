@@ -3,4 +3,4 @@ library_name = "notcurses"
 output_file_path = "./../src/LibNotcurses.jl"
 module_name = "LibNotcurses"
 jll_pkg_name = "Notcurses_jll"
-export_symbol_prefixes = ["nc"]
+export_symbol_prefixes = ["nc", "notcurses_"]
