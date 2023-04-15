@@ -1,6 +1,8 @@
 name = "Notcurses"
 uuid = "0745143a-842b-4fd2-a9b7-9e0948c68818"
-authors = ["Dheepak Krishnamurthy <me@kdheepak.com>, KristofferC <kcarlsson89@gmail.com> and contributors"]
+authors = [
+  "Dheepak Krishnamurthy <me@kdheepak.com>, KristofferC <kcarlsson89@gmail.com> and contributors",
+]
 version = "0.1.0"
 
 [deps]
@@ -12,4 +14,5 @@ Notcurses_jll = "56927b6a-812d-5b37-a4c6-b46ab6359194"
 [compat]
 EnumX = "1"
 Notcurses_jll = "3.0.9"
+Ncurses_jll = "6.2.0"
 julia = "1"
