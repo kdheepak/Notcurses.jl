@@ -1,0 +1,3 @@
+[deps]
+Clang = "40e3b903-d033-50b4-a0cc-940c62c95e31"
+Notcurses_jll = "56927b6a-812d-5b37-a4c6-b46ab6359194"
