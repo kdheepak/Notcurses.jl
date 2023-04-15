@@ -1,18 +1,15 @@
 name = "Notcurses"
 uuid = "0745143a-842b-4fd2-a9b7-9e0948c68818"
-authors = [
-  "Dheepak Krishnamurthy <me@kdheepak.com>, KristofferC <kcarlsson89@gmail.com> and contributors",
-]
+authors = ["Dheepak Krishnamurthy <me@kdheepak.com>, KristofferC <kcarlsson89@gmail.com> and contributors"]
 version = "0.1.0"
 
 [deps]
-CEnum = "fa961155-64e5-5f13-b03f-caf6b980ea82"
 Crayons = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
 EnumX = "4e289a0a-7415-4d19-859d-a7e5c4648b56"
 Ncurses_jll = "68e3532b-a499-55ff-9963-d1c0c0748b3a"
 Notcurses_jll = "56927b6a-812d-5b37-a4c6-b46ab6359194"
 
 [compat]
+EnumX = "1"
 Notcurses_jll = "3.0.9"
 julia = "1"
-EnumX = "1"

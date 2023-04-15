@@ -3,4 +3,4 @@ generate:
   julia -e 'using JuliaFormatter; format("./src/lib")'
 
 test:
-  julia --project test/runtests.jl
+  julia --project examples/logger.jl
