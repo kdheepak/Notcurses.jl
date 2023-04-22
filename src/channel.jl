@@ -1,8 +1,8 @@
 """
 initialize a 32-bit channel pair with specified RGB
 """
-channel_initializer(r::UInt32, g::UInt32, b::UInt32) = L.NCCHANNEL_INITIALIZER(r, g, b)
-channels_initializer(fr::UInt32, fg::UInt32, fb::UInt32, br::UInt32, bg::UInt32, bb::UInt32) = L.NCCHANNEL_INITIALIZER(fr, fg, fb, br, bg, bb)
+channel_initializer(r, g, b) = L.NCCHANNEL_INITIALIZER(r, g, b)
+channels_initializer(fr, fg, fb, br, bg, bb) = L.NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb)
 
 """
 Extract the 2-bit alpha component from a 32-bit channel. It is not

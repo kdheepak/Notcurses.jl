@@ -1,4 +1,5 @@
 const uintmax_t = Culong
+const uint32_t = UInt32
 
 mutable struct ncdirect end
 

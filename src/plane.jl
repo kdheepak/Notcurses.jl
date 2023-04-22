@@ -52,7 +52,7 @@ Return the dimensions of this ncplane
 function dim_yx(n::Plane)
   y, x = Ref{Cuint}(), Ref{Cuint}()
   L.ncplane_dim_yx(n::Plane, y, x)
-  return (y, x)
+  return (y[], x[])
 end
 
 """

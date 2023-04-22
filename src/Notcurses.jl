@@ -7,6 +7,7 @@ using Logging
 
 include("./lib/LibNotcurses.jl")
 import .LibNotcurses as L
+using .LibNotcurses
 
 include("utils.jl")
 include("enums.jl")
