@@ -1,4 +1,4 @@
-function NotcursesContext(func::Function)
+function nc(func::Function)
   t = tempname()
   f = open(t, "w")
   logger = global_logger(SimpleLogger(f))

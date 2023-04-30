@@ -100,3 +100,19 @@ mutable struct Cell
   end
 end
 Base.cconvert(::Type{Ptr{L.nccell}}, c::Cell) = c.ptr
+
+mutable struct Visual
+  ptr::Ptr{L.ncvisual}
+end
+Base.cconvert(::Type{Ptr{L.ncvisual}}, c::Visual) = c.ptr
+
+function Visual(height::Integer, width::Integer)
+  buf = zeros(UInt8, height * width * 4)
+  for i in 0:(height*width-1)
+    buf[4*i+1] = 0
+    buf[4*i+2] = 0
+    buf[4*i+3] = 0
+    buf[4*i+4] = 255
+  end
+  Visual(L.ncvisual_from_rgba(pointer(buf), height, width * 4, width))
+end

@@ -19,7 +19,8 @@ include("channel.jl")
 include("cell.jl")
 include("direct.jl")
 include("input.jl")
+include("visual.jl")
 
-include("context.jl")
+include("helper.jl")
 
 end # module Notcurses
