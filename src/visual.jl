@@ -1,4 +1,62 @@
 
+Base.@kwdef struct VisualOptions
+  # if no ncplane is provided, one will be created using the exact size
+  # necessary to render the source with perfect fidelity (this might be
+  # smaller or larger than the rendering area). if NCVISUAL_OPTION_CHILDPLANE
+  # is provided, this must be non-NULL, and will be interpreted as the parent.
+  plane::Plane
+  # the scaling is ignored if no ncplane is provided (it ought be NCSCALE_NONE
+  # in this case). otherwise, the source is stretched/scaled relative to the
+  # provided ncplane.
+  scaling::Scale.T = Scale.NONE
+  # if an ncplane is provided, y and x specify where the visual will be
+  # rendered on that plane. otherwise, they specify where the created ncplane
+  # will be placed relative to the standard plane's origin. x is an ncalign_e
+  # value if NCVISUAL_OPTION_HORALIGNED is provided. y is an ncalign_e if
+  # NCVISUAL_OPTION_VERALIGNED is provided.
+  y::Int = 0
+  x::Int = 0
+  # the region of the visual that ought be rendered. for the entire visual,
+  # pass an origin of 0, 0 and a size of 0, 0 (or the true height and width).
+  # these numbers are all in terms of ncvisual pixels. negative values are
+  # prohibited.
+  begy::UInt = 0 # origin of rendered region in pixels
+  begx::UInt = 0 # origin of rendered region in pixels
+  leny::UInt = 0 # size of rendered region in pixels
+  lenx::UInt = 0 # size of rendered region in pixels
+  # use NCBLIT_DEFAULT if you don't care, an appropriate blitter will be
+  # chosen for your terminal, given your scaling. NCBLIT_PIXEL is never
+  # chosen for NCBLIT_DEFAULT.
+  blitter::Blit.T = Blit.DEFAULT # glyph set to use (maps input to output cells)
+  flags::UInt64 = 0x00 # bitmask over NCVISUAL_OPTION_*
+  transcolor::UInt32 = 0x00 # treat this color as transparent under NCVISUAL_OPTION_ADDALPHA
+  # pixel offsets within the cell. if NCBLIT_PIXEL is used, the bitmap will
+  # be drawn offset from the upper-left cell's origin by these amounts. it is
+  # an error if either number exceeds the cell-pixel geometry in its
+  # dimension. if NCBLIT_PIXEL is not used, these fields are ignored.
+  # this functionality can be used for smooth bitmap movement.
+  pxoffy::UInt = 0
+  pxoffx::UInt = 0
+end
+
+Base.cconvert(::Type{Ptr{L.ncvisual_options}}, opts::VisualOptions) = Ref(
+  L.ncvisual_options(
+    opts.plane,
+    opts.scaling,
+    opts.y,
+    opts.x,
+    opts.begy,
+    opts.begx,
+    opts.leny,
+    opts.lenx,
+    opts.blitter,
+    opts.flags,
+    opts.transcolor,
+    opts.pxoffy,
+    opts.pxoffx,
+  ),
+)
+
 """
     from_file(file)
 
@@ -151,7 +209,7 @@ specify any region beyond the boundaries of the frame. Returns the (possibly
 newly-created) plane to which we drew. Pixels may not be blitted to the
 standard plane.
 """
-function blit(nc::NotcursesObject, ncv::Visual, vopts::Options)
+function blit(nc::NotcursesObject, ncv::Visual, vopts::VisualOptions)
   Plane(L.ncvisual_blit(nc, ncv, vopts))
 end
 
@@ -179,8 +237,8 @@ the specified scaling method. Currently, this means:
     NCBLIT_2x2 and NCBLIT_3x2 both distort the original aspect ratio, thus
     NCBLIT_2x1 is used outside of NCSCALE_STRETCH.
 """
-function media_defblitter(nc::NotcursesObject, scale)
-  L.ncvisual_media_defblitter(nc, scale::ncscale_e)::ncblitter_e
+function media_defblitter(nc::NotcursesObject, scale::Scale.T)
+  Blit.T(Int(L.ncvisual_media_defblitter(nc, L.ncscale_e(UInt32(scale)))))
 end
 
 """
