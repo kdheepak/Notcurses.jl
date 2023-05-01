@@ -36,7 +36,7 @@ end
 struct Plane
   ptr::Ptr{L.ncplane}
 end
-Base.cconvert(::Type{Ptr{L.ncplane}}, nc::Plane) = nc.ptr
+Base.cconvert(::Type{Ptr{L.ncplane}}, p::Plane) = p.ptr
 
 """
 An nccell corresponds to a single character cell on some plane, which can be

@@ -2,12 +2,12 @@
 """
 Return the topmost plane of the pile containing 'n'.
 """
-top(n::Plane) = L.ncpile_top(n)
+top(n::Plane) = Plane(L.ncpile_top(n))
 
 """
 Return the bottommost plane of the pile containing 'n'.
 """
-bottom(n::Plane) = L.ncpile_bottom(n)
+bottom(n::Plane) = Plane(L.ncpile_bottom(n))
 
 putstr(n::Plane, str::Union{AbstractChar,AbstractString}) = L.ncplane_putstr(n.ptr, string(str))
 
