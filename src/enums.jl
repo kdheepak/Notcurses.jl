@@ -195,7 +195,7 @@ we never blit full blocks, but instead spaces (more efficient) with the
 background set to the desired foreground. these need be kept in the same
 order as the blitters[] definition in lib/blit.c.
 """
-@enumx Blit::UInt32 begin
+@enumx Blitter::UInt32 begin
   """
   let the ncvisual pick
   """
@@ -235,7 +235,7 @@ order as the blitters[] definition in lib/blit.c.
   """
   EIGHT_BY_ONE = Int(L.NCBLIT_8x1)
 end
-Base.cconvert(::Type{L.ncblitter_e}, v::Blit.T) = L.ncblitter_e(UInt32(v))
+Base.cconvert(::Type{L.ncblitter_e}, v::Blitter.T) = L.ncblitter_e(UInt32(v))
 
 """background cannot be highcontrast, only foreground"""
 @enumx Alpha begin

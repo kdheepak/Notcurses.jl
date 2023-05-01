@@ -27,7 +27,7 @@ Base.@kwdef struct VisualOptions
   # use NCBLIT_DEFAULT if you don't care, an appropriate blitter will be
   # chosen for your terminal, given your scaling. NCBLIT_PIXEL is never
   # chosen for NCBLIT_DEFAULT.
-  blitter::Blit.T = Blit.DEFAULT # glyph set to use (maps input to output cells)
+  blitter::Blitter.T = Blitter.DEFAULT # glyph set to use (maps input to output cells)
   flags::UInt64 = 0x00 # bitmask over NCVISUAL_OPTION_*
   transcolor::UInt32 = 0x00 # treat this color as transparent under NCVISUAL_OPTION_ADDALPHA
   # pixel offsets within the cell. if NCBLIT_PIXEL is used, the bitmap will
@@ -77,7 +77,7 @@ planes can be subjected to ncvisual transformations. If possible, it's
 better to create the ncvisual from memory using from_rgba().
 Lengths of 0 are interpreted to mean "all available remaining area".
 """
-function from_plane(n::Plane, blit::Blit.T, begy, begx, leny, lenx)
+function from_plane(n::Plane, blit::Blitter.T, begy, begx, leny, lenx)
   Visual(L.ncvisual_from_plane(n, blit, begy, begx, leny, lenx))
 end
 
@@ -238,7 +238,7 @@ the specified scaling method. Currently, this means:
     NCBLIT_2x1 is used outside of NCSCALE_STRETCH.
 """
 function media_defblitter(nc::NotcursesObject, scale::Scale.T)
-  Blit.T(Int(L.ncvisual_media_defblitter(nc, L.ncscale_e(UInt32(scale)))))
+  Blitter.T(Int(L.ncvisual_media_defblitter(nc, L.ncscale_e(UInt32(scale)))))
 end
 
 """

@@ -106,13 +106,9 @@ mutable struct Visual
 end
 Base.cconvert(::Type{Ptr{L.ncvisual}}, c::Visual) = c.ptr
 
-function Visual(height::Integer, width::Integer)
-  buf = zeros(UInt8, height * width * 4)
-  for i in 0:(height*width-1)
-    buf[4*i+1] = 0
-    buf[4*i+2] = 0
-    buf[4*i+3] = 0
-    buf[4*i+4] = 255
-  end
-  Visual(L.ncvisual_from_rgba(pointer(buf), height, width * 4, width))
+function Visual(height::Integer, width::Integer, color = (; r = 0, g = 0, b = 0, a = 0))
+  (; r, g, b, a) = color
+  buf = zeros(UInt32, height * width)
+  buf .= rgba_to_uint32(UInt8(r), UInt8(g), UInt8(b), UInt8(a))
+  Visual(L.ncvisual_from_rgba(buf, height, width * 4, width))
 end
