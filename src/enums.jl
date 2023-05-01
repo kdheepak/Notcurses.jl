@@ -172,7 +172,6 @@ Alignment within a plane or terminal. Left/right-justified, or centered.
   BOTTOM = Int(L.NCALIGN_RIGHT)
 end
 Base.cconvert(::Type{L.ncalign_e}, v::Align.T) = L.ncalign_e(Int(v))
-Base.convert(::Type{L.ncalign_e}, v::Align.T) = L.ncalign_e(Int(v))
 
 """
 How to scale an ncvisual during rendering. NCSCALE_NONE will apply no
@@ -190,7 +189,6 @@ which don't preserve aspect ratio.
   SCALE_HIRES = Int(L.NCSCALE_SCALE_HIRES)
 end
 Base.cconvert(::Type{L.ncscale_e}, v::Scale.T) = L.ncscale_e(UInt32(v))
-Base.convert(::Type{L.ncscale_e}, v::Scale.T) = L.ncscale_e(UInt32(v))
 
 """
 we never blit full blocks, but instead spaces (more efficient) with the
@@ -238,7 +236,6 @@ order as the blitters[] definition in lib/blit.c.
   EIGHT_BY_ONE = Int(L.NCBLIT_8x1)
 end
 Base.cconvert(::Type{L.ncblitter_e}, v::Blit.T) = L.ncblitter_e(UInt32(v))
-Base.convert(::Type{L.ncblitter_e}, v::Blit.T) = L.ncblitter_e(UInt32(v))
 
 """background cannot be highcontrast, only foreground"""
 @enumx Alpha begin

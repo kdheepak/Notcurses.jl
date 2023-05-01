@@ -41,15 +41,15 @@ end
 
 Base.cconvert(::Type{Ptr{L.ncvisual_options}}, opts::VisualOptions) = Ref(
   L.ncvisual_options(
-    opts.plane,
-    opts.scaling,
+    Base.cconvert(Ptr{L.ncplane}, opts.plane),
+    Base.cconvert(L.ncscale_e, opts.scaling),
     opts.y,
     opts.x,
     opts.begy,
     opts.begx,
     opts.leny,
     opts.lenx,
-    opts.blitter,
+    Base.cconvert(L.ncblitter_e, opts.blitter),
     opts.flags,
     opts.transcolor,
     opts.pxoffy,
@@ -77,7 +77,7 @@ planes can be subjected to ncvisual transformations. If possible, it's
 better to create the ncvisual from memory using from_rgba().
 Lengths of 0 are interpreted to mean "all available remaining area".
 """
-function from_plane(n::Plane, blit, begy, begx, leny, lenx)
+function from_plane(n::Plane, blit::Blit.T, begy, begx, leny, lenx)
   Visual(L.ncvisual_from_plane(n, blit, begy, begx, leny, lenx))
 end
 
@@ -119,7 +119,7 @@ end
 extract the next frame from an ncvisual. returns 1 on end of file, 0 on
 success, and -1 on failure.
 """
-function decode(nc)
+function decode(nc::Visual)
   L.ncvisual_decode(nc)
 end
 
@@ -131,7 +131,7 @@ rewind to the first frame of the ncvisual. a subsequent 'blit()'
 will render the first frame, as if the ncvisual had been closed and reopened.
 the return values remain the same as those of decode().
 """
-function decode_loop(nc)
+function decode_loop(nc::Visual)
   L.ncvisual_decode_loop(nc)
 end
 
@@ -141,7 +141,7 @@ end
 Rotate the visual 'rads' radians. Only M_PI/2 and -M_PI/2 are supported at
 the moment, but this might change in the future.
 """
-function rotate(n, rads::Float64)
+function rotate(n::Visual, rads::Float64)
   L.ncvisual_rotate(n, rads)
 end
 
