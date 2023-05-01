@@ -1,31 +1,30 @@
 
-function get_nblocking(n::Union{Direct,NotcursesObject})
+function get_nblock(n::Union{Direct,NotcursesObject})
   ni = Ref{L.ncinput}()
   v = if n isa Direct
-    L.ncdirect_get_nblocking(n, ni)
+    L.ncdirect_get_nblock(n, ni)
   else
-    L.notcurses_get_nblocking(n, ni)
+    L.notcurses_get_nblock(n, ni)
   end
   v == 0 && return nothing
   if v == -1
-    throw(NotcursesException("error in `ncdirect_get_blocking`"))
+    throw(NotcursesException("error in `get_nblock`"))
   end
   k = L.nckey_synthesized_p(v) ? Key.T(v) : Char(v)
   return k, ni[]
 end
 
 function get_blocking(n::Union{Direct,NotcursesObject})
-  ni_ref = Ref{L.ncinput}()
+  ni = Ref{L.ncinput}()
   v = if n isa Direct
-    L.ncdirect_get_blocking(n, ni_ref)
+    L.ncdirect_get_blocking(n, ni)
   else
-    L.notcurses_get_blocking(n, ni_ref)
+    L.notcurses_get_blocking(n, ni)
   end
   v == 0 && return nothing
   if v == -1
-    throw(NotcursesException("error in `ncdirect_get_blocking`"))
+    throw(NotcursesException("error in `get_blocking`"))
   end
-  ni = ni_ref[]
   v = L.nckey_synthesized_p(v) ? Key.T(v) : Char(v)
-  return v, ni
+  return v, ni[]
 end
