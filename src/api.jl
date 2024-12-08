@@ -89,19 +89,19 @@ function term_dim_yx(nc::NotcursesObject)
 end
 
 function refresh(nc::NotcursesObject)
-  y, x = Ref{Cint}(0), Ref{Cint}(0)
-  L.notcurses_refresh(nc, y, x)
-  (; y = y[], x = [])
+  rows, cols = Ref{Cuint}(0), Ref{Cuint}(0)
+  L.notcurses_refresh(nc, rows, cols)
+  (; rows = rows[], cols = cols[])
 end
 
 function default_foreground(nc::NotcursesObject)
-  fg = Ref{Cint}(0)
+  fg = Ref{Cuint}(0)
   L.notcurses_default_foreground(nc, fg) != 0 && error("Unable to get default foreground")
   Crayon(; foreground = fg)
 end
 
 function default_background(nc::NotcursesObject)
-  bg = Ref{Cint}(0)
+  bg = Ref{Cuint}(0)
   L.notcurses_default_background(nc, bg) && error("Unable to get default background")
   Crayon(; background = bg)
 end
