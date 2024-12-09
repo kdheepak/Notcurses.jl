@@ -12,10 +12,9 @@
 #include <signal.h>
 #include <limits.h>
 #include <stdbool.h>
-
-#include <ncport.h>
-#include <nckeys.h>
-#include <ncseqs.h>
+#include <notcurses/ncport.h>
+#include <notcurses/nckeys.h>
+#include <notcurses/ncseqs.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -133,13 +132,13 @@ typedef enum {
   ((NCCHANNEL_INITIALIZER((fr), (fg), (fb)) << 32ull) + \
    (NCCHANNEL_INITIALIZER((br), (bg), (bb))))
 
-// These lowest-level functions manipulate a channel encodings directly. Users
-// will typically manipulate ncplanes' and nccells' channels through their
-// APIs, rather than calling these explicitly.
+// These lowest-level functions directly manipulate a channel. Users will
+// typically manipulate ncplanes' and nccells' channels through their APIs,
+// rather than calling these explicitly.
 
 // Extract the 2-bit alpha component from a 32-bit channel. It is not
 // shifted down, and can be directly compared to NCALPHA_* values.
-static inline unsigned
+static inline uint32_t
 ncchannel_alpha(uint32_t channel){
   return channel & NC_BG_ALPHA_MASK;
 }
@@ -202,8 +201,7 @@ ncchannel_set_palindex(uint32_t* channel, unsigned idx){
 // Is this channel using RGB color?
 static inline bool
 ncchannel_rgb_p(uint32_t channel){
-  // bitwise or is intentional (allows compiler more freedom)
-  return !(ncchannel_default_p(channel) | ncchannel_palindex_p(channel));
+  return !(ncchannel_default_p(channel) || ncchannel_palindex_p(channel));
 }
 
 // Extract the 8-bit red component from a 32-bit channel. Only valid if
@@ -1199,6 +1197,10 @@ typedef enum {
   NCTYPE_RELEASE,
 } ncintype_e;
 
+// Note: changing this also means adding kitty_cb_atxt functions in
+// in.c otherwise extra codepoints won't be picked up.
+#define NCINPUT_MAX_EFF_TEXT_CODEPOINTS 4
+
 // An input event. Cell coordinates are currently defined only for mouse
 // events. It is not guaranteed that we can set the modifiers for a given
 // ncinput. We encompass single Unicode codepoints, not complete EGCs.
@@ -1215,6 +1217,10 @@ typedef struct ncinput {
   ncintype_e evtype;
   unsigned modifiers;// bitmask over NCKEY_MOD_*
   int ypx, xpx;      // pixel offsets within cell, -1 for undefined
+  uint32_t eff_text[NCINPUT_MAX_EFF_TEXT_CODEPOINTS];  // Effective 
+                     // utf32 representation, taking modifier 
+                     // keys into account. This can be multiple
+                     // codepoints. Array is zero-terminated.
 } ncinput;
 
 static inline bool
@@ -1376,12 +1382,6 @@ API const struct notcurses* ncplane_notcurses_const(const struct ncplane* n)
 // Return the dimensions of this ncplane. y or x may be NULL.
 API void ncplane_dim_yx(const struct ncplane* n, unsigned* RESTRICT y, unsigned* RESTRICT x)
   __attribute__ ((nonnull (1)));
-
-// Get a reference to the standard plane (one matching our current idea of the
-// terminal size) for this terminal. The standard plane always exists, and its
-// origin is always at the uppermost, leftmost cell of the terminal.
-API struct ncplane* notcurses_stdplane(struct notcurses* nc);
-API const struct ncplane* notcurses_stdplane_const(const struct notcurses* nc);
 
 // notcurses_stdplane(), plus free bonus dimensions written to non-NULL y/x!
 static inline struct ncplane*
@@ -2654,7 +2654,8 @@ ncplane_perimeter(struct ncplane* n, const nccell* ul, const nccell* ur,
 // 'c', 'c' is copied into it, and the original glyph is considered the fill
 // target. We do the same to all cardinally-connected cells having this same
 // fill target. Returns the number of cells polyfilled. An invalid initial y, x
-// is an error. Returns the number of cells filled, or -1 on error.
+// is an error. Returns the number of cells filled, or -1 on error. Does
+// not update cursor position.
 API int ncplane_polyfill_yx(struct ncplane* n, int y, int x, const nccell* c)
   __attribute__ ((nonnull (1, 4)));
 
@@ -2669,7 +2670,7 @@ API int ncplane_polyfill_yx(struct ncplane* n, int y, int x, const nccell* c)
 // color everything the same, all four channels should be equivalent. The
 // resulting alpha values are equal to incoming alpha values. Returns the
 // number of cells filled on success, or -1 on failure.
-// Palette-indexed color is not supported.
+// Palette-indexed color is not supported. Does not update cursor position.
 //
 // Preconditions for gradient operations (error otherwise):
 //
@@ -2686,7 +2687,7 @@ API int ncplane_gradient(struct ncplane* n, int y, int x, unsigned ylen,
 // Do a high-resolution gradient using upper blocks and synced backgrounds.
 // This doubles the number of vertical gradations, but restricts you to
 // half blocks (appearing to be full blocks). Returns the number of cells
-// filled on success, or -1 on error.
+// filled on success, or -1 on error. Does not update cursor position.
 API int ncplane_gradient2x1(struct ncplane* n, int y, int x, unsigned ylen,
                             unsigned xlen, uint32_t ul, uint32_t ur,
                             uint32_t ll, uint32_t lr)
@@ -2698,7 +2699,7 @@ API int ncplane_gradient2x1(struct ncplane* n, int y, int x, unsigned ylen,
 // is specified by 'ylen', 'xlen', and 0 may be specified to indicate everything
 // remaining to the right and below, respectively. It is an error for any
 // coordinate to be outside the plane. Returns the number of cells set,
-// or -1 on failure.
+// or -1 on failure. Does not update the cursor position.
 API int ncplane_format(struct ncplane* n, int y, int x, unsigned ylen,
                        unsigned xlen, uint16_t stylemask)
   __attribute__ ((nonnull (1)));
@@ -2709,7 +2710,7 @@ API int ncplane_format(struct ncplane* n, int y, int x, unsigned ylen,
 // is specified by 'ylen', 'xlen', and 0 may be specified to indicate everything
 // remaining to the right and below, respectively. It is an error for any
 // coordinate to be outside the plane. Returns the number of cells set,
-// or -1 on failure.
+// or -1 on failure. Does not update the cursor position.
 API int ncplane_stain(struct ncplane* n, int y, int x, unsigned ylen,
                       unsigned xlen, uint64_t ul, uint64_t ur,
                       uint64_t ll, uint64_t lr)
@@ -3262,21 +3263,27 @@ API ALLOC struct ncvisual* ncvisual_from_file(const char* file)
 // memory at 'rgba'. 'rgba' is laid out as 'rows' lines, each of which is
 // 'rowstride' bytes in length. Each line has 'cols' 32-bit 8bpc RGBA pixels
 // followed by possible padding (there will be 'rowstride' - 'cols' * 4 bytes
-// of padding). The total size of 'rgba' is thus (rows * rowstride) bytes, of
-// which (rows * cols * 4) bytes are actual non-padding data.
+// of padding). The total size of 'rgba' is thus ('rows' * 'rowstride') bytes,
+// of which ('rows' * 'cols' * 4) bytes are actual non-padding data. It is an
+// error if any argument is not positive, if 'rowstride' is not a multiple of
+// 4, or if 'rowstride' is less than 'cols' * 4.
 API ALLOC struct ncvisual* ncvisual_from_rgba(const void* rgba, int rows,
                                               int rowstride, int cols)
   __attribute__ ((nonnull (1)));
 
 // ncvisual_from_rgba(), but the pixels are 3-byte RGB. A is filled in
-// throughout using 'alpha'.
+// throughout using 'alpha'. It is an error if 'rows', 'rowstride', or 'cols'
+// is not positive, if 'rowstride' is not a multiple of 3, or if 'rowstride'
+// is less than 'cols' * 3.
 API ALLOC struct ncvisual* ncvisual_from_rgb_packed(const void* rgba, int rows,
                                                     int rowstride, int cols,
                                                     int alpha)
   __attribute__ ((nonnull (1)));
 
 // ncvisual_from_rgba(), but the pixels are 4-byte RGBx. A is filled in
-// throughout using 'alpha'. rowstride must be a multiple of 4.
+// throughout using 'alpha'. It is an error if 'rows', 'cols', or 'rowstride'
+// are not positive, if 'rowstride' is not a multiple of 4, or if 'rowstride'
+// is less than 'cols' * 4.
 API ALLOC struct ncvisual* ncvisual_from_rgb_loose(const void* rgba, int rows,
                                                    int rowstride, int cols,
                                                    int alpha)
@@ -3285,6 +3292,8 @@ API ALLOC struct ncvisual* ncvisual_from_rgb_loose(const void* rgba, int rows,
 // ncvisual_from_rgba(), but 'bgra' is arranged as BGRA. note that this is a
 // byte-oriented layout, despite being bunched in 32-bit pixels; the lowest
 // memory address ought be B, and A is reached by adding 3 to that address.
+// It is an error if 'rows', 'cols', or 'rowstride' are not positive, if
+// 'rowstride' is not a multiple of 4, or if 'rowstride' is less than 'cols' * 4.
 API ALLOC struct ncvisual* ncvisual_from_bgra(const void* bgra, int rows,
                                               int rowstride, int cols)
   __attribute__ ((nonnull (1)));
@@ -3292,6 +3301,9 @@ API ALLOC struct ncvisual* ncvisual_from_bgra(const void* bgra, int rows,
 // ncvisual_from_rgba(), but 'data' is 'pstride'-byte palette-indexed pixels,
 // arranged in 'rows' lines of 'rowstride' bytes each, composed of 'cols'
 // pixels. 'palette' is an array of at least 'palsize' ncchannels.
+// It is an error if 'rows', 'cols', 'rowstride', or 'pstride' are not
+// positive, if 'rowstride' is not a multiple of 'pstride', or if 'rowstride'
+// is less than 'cols' * 'pstride'.
 API ALLOC struct ncvisual* ncvisual_from_palidx(const void* data, int rows,
                                                 int rowstride, int cols,
                                                 int palsize, int pstride,
@@ -3790,8 +3802,7 @@ API struct ncplane* nctablet_plane(struct nctablet* t);
 //
 // You are encouraged to consult notcurses_metric(3).
 API const char* ncnmetric(uintmax_t val, size_t s, uintmax_t decimal,
-                          char* buf, int omitdec, uintmax_t mult,
-                          int uprefix)
+                          char* buf, int omitdec, uintmax_t mult, int uprefix)
   __attribute__ ((nonnull (4)));
 
 // The number of columns is one fewer, as the STRLEN expressions must leave
@@ -4581,6 +4592,8 @@ API int ncsubproc_destroy(struct ncsubproc* n);
 // returned. Otherwise, the QR code "version" (size) is returned. The QR code
 // is (version * 4 + 17) columns wide, and ⌈version * 4 + 17⌉ rows tall (the
 // properly-scaled values are written back to '*ymax' and '*xmax').
+// NCBLIT_2x1 is always used, and the call will fail if it is not available,
+// as only this blitter can generate a proper aspect ratio.
 API int ncplane_qrcode(struct ncplane* n, unsigned* ymax, unsigned* xmax,
                        const void* data, size_t len)
   __attribute__ ((nonnull (1, 4)));
