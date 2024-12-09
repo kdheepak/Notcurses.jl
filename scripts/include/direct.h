@@ -1,7 +1,7 @@
 #ifndef NOTCURSES_DIRECT
 #define NOTCURSES_DIRECT
 
-#include <notcurses.h>
+#include <notcurses/notcurses.h>
 
 #ifdef __cplusplus
 extern "C" {
