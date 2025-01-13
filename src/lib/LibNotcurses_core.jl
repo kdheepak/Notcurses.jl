@@ -656,10 +656,11 @@ order as the blitters[] definition in lib/blit.c.
     NCBLIT_2x1 = 2
     NCBLIT_2x2 = 3
     NCBLIT_3x2 = 4
-    NCBLIT_BRAILLE = 5
-    NCBLIT_PIXEL = 6
-    NCBLIT_4x1 = 7
-    NCBLIT_8x1 = 8
+    NCBLIT_4x2 = 5
+    NCBLIT_BRAILLE = 6
+    NCBLIT_PIXEL = 7
+    NCBLIT_4x1 = 8
+    NCBLIT_8x1 = 9
 end
 
 struct ncvisual_options
@@ -1844,6 +1845,7 @@ struct nccapabilities
     halfblocks::Bool
     quadrants::Bool
     sextants::Bool
+    octants::Bool
     braille::Bool
 end
 
@@ -3742,6 +3744,7 @@ Get the default *media* (not plot) blitter for this environment when using
 the specified scaling method. Currently, this means:
  - if lacking UTF-8, NCBLIT_1x1
  - otherwise, if not NCSCALE_STRETCH, NCBLIT_2x1
+ - otherwise, if octants are known to be good, NCBLIT_4x2
  - otherwise, if sextants are not known to be good, NCBLIT_2x2
  - otherwise NCBLIT_3x2
 NCBLIT_2x2 and NCBLIT_3x2 both distort the original aspect ratio, thus
@@ -6324,6 +6327,8 @@ const NCHALFBLOCKS = " ▀▄█"
 const NCQUADBLOCKS = " ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█"
 
 const NCSEXBLOCKS = " 🬀🬁🬂🬃🬄🬅🬆🬇🬈🬊🬋🬌🬍🬎🬏🬐🬑🬒🬓▌🬔🬕🬖🬗🬘🬙🬚🬛🬜🬝🬞🬟🬠🬡🬢🬣🬤🬥🬦🬧▐🬨🬩🬪🬫🬬🬭🬮🬯🬰🬱🬲🬳🬴🬵🬶🬷🬸🬹🬺🬻█"
+
+const NCOCTBLOCKS = ((((((((((((((((" \U1cea8\U1ceab🮂\U1cd00▘\U1cd01\U1cd02")("\U1cd03\U1cd04▝\U1cd05\U1cd06\U1cd07\U1cd08▀\U1cd09\U1cd0a\U1cd0b\U1cd0c\U1fbe6\U1cd0d\U1cd0e\U1cd0f"))("\U1cd10\U1cd11\U1cd12\U1cd13\U1cd14\U1cd15\U1cd16\U1cd17\U1cd18\U1cd19\U1cd1a\U1cd1b\U1cd1c\U1cd1d\U1cd1e\U1cd1f"))("\U1fbe7\U1cd20\U1cd21\U1cd22\U1cd23\U1cd24\U1cd25\U1cd26\U1cd27\U1cd28\U1cd29\U1cd2a\U1cd2b\U1cd2c\U1cd2d\U1cd2e"))("\U1cd2f\U1cd30\U1cd31\U1cd32\U1cd33\U1cd34\U1cd35🮅\U1cea3\U1cd36\U1cd37\U1cd38\U1cd39\U1cd3a\U1cd3b\U1cd3c"))("\U1cd3d\U1cd3e\U1cd3f\U1cd40\U1cd41\U1cd42\U1cd43\U1cd44▖\U1cd45\U1cd46\U1cd47\U1cd48▌\U1cd49\U1cd4a"))("\U1cd4b\U1cd4c▞\U1cd4d\U1cd4e\U1cd4f\U1cd50▛\U1cd51\U1cd52\U1cd53\U1cd54\U1cd55\U1cd56\U1cd57\U1cd58"))("\U1cd59\U1cd5a\U1cd5b\U1cd5c\U1cd5d\U1cd5e\U1cd5f\U1cd60\U1cd61\U1cd62\U1cd63\U1cd64\U1cd65\U1cd66\U1cd67\U1cd68"))("\U1cd69\U1cd6a\U1cd6b\U1cd6c\U1cd6d\U1cd6e\U1cd6f\U1cd70\U1cea0\U1cd71\U1cd72\U1cd73\U1cd74\U1cd75\U1cd76\U1cd77"))("\U1cd78\U1cd79\U1cd7a\U1cd7b\U1cd7c\U1cd7d\U1cd7e\U1cd7f\U1cd80\U1cd81\U1cd82\U1cd83\U1cd84\U1cd85\U1cd86\U1cd87"))("\U1cd88\U1cd89\U1cd8a\U1cd8b\U1cd8c\U1cd8d\U1cd8e\U1cd8f▗\U1cd90\U1cd91\U1cd92\U1cd93▚\U1cd94\U1cd95"))("\U1cd96\U1cd97▐\U1cd98\U1cd99\U1cd9a\U1cd9b▜\U1cd9c\U1cd9d\U1cd9e\U1cd9f\U1cda0\U1cda1\U1cda2\U1cda3"))("\U1cda4\U1cda5\U1cda6\U1cda7\U1cda8\U1cda9\U1cdaa\U1cdab▂\U1cdac\U1cdad\U1cdae\U1cdaf\U1cdb0\U1cdb1\U1cdb2"))("\U1cdb3\U1cdb4\U1cdb5\U1cdb6\U1cdb7\U1cdb8\U1cdb9\U1cdba\U1cdbb\U1cdbc\U1cdbd\U1cdbe\U1cdbf\U1cdc0\U1cdc1\U1cdc2"))("\U1cdc3\U1cdc4\U1cdc5\U1cdc6\U1cdc7\U1cdc8\U1cdc9\U1cdca\U1cdcb\U1cdcc\U1cdcd\U1cdce\U1cdcf\U1cdd0\U1cdd1\U1cdd2"))("\U1cdd3\U1cdd4\U1cdd5\U1cdd6\U1cdd7\U1cdd8\U1cdd9\U1cdda▄\U1cddb\U1cddc\U1cddd\U1cdde▙\U1cddf\U1cde0"))("\U1cde1\U1cde2▟\U1cde3▆\U1cde4\U1cde5█")
 
 const NCSUITSBLACK = "♠♣♥♦"
 

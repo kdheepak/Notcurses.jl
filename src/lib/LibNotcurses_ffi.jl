@@ -196,6 +196,19 @@ function ncdirect_cansextant(nc)
 end
 
 """
+    ncdirect_canoctant(nc)
+
+Can we reliably use Unicode 16 octants?
+### Prototype
+```c
+static inline bool ncdirect_canoctant(const struct ncdirect* nc);
+```
+"""
+function ncdirect_canoctant(nc)
+    @ccall libnotcurses_ffi.ncdirect_canoctant(nc::Ptr{ncdirect})::Cint
+end
+
+"""
     ncdirect_canbraille(nc)
 
 Can we reliably use Unicode Braille?
@@ -1734,6 +1747,19 @@ __attribute__ ((nonnull (1))) __attribute__ ((pure)) static inline bool notcurse
 """
 function notcurses_cansextant(nc)
     @ccall libnotcurses_ffi.notcurses_cansextant(nc::Ptr{notcurses})::Bool
+end
+
+"""
+    notcurses_canoctant(nc)
+
+Can we reliably use Unicode 16 octants?
+### Prototype
+```c
+__attribute__ ((nonnull (1))) __attribute__ ((pure)) static inline bool notcurses_canoctant(const struct notcurses* nc);
+```
+"""
+function notcurses_canoctant(nc)
+    @ccall libnotcurses_ffi.notcurses_canoctant(nc::Ptr{notcurses})::Bool
 end
 
 """
