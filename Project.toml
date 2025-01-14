@@ -3,7 +3,7 @@ uuid = "0745143a-842b-4fd2-a9b7-9e0948c68818"
 authors = [
   "Dheepak Krishnamurthy <me@kdheepak.com>, KristofferC <kcarlsson89@gmail.com> and contributors",
 ]
-version = "0.3.0"
+version = "0.2.1"
 
 [deps]
 Crayons = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
