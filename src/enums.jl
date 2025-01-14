@@ -419,5 +419,5 @@ end
   # Just aliases, ma'am, from the 128 characters common to ASCII+UTF8
   TAB = 0x09
   ESC = 0x1b
-  SPACE = 0x2
+  SPACE = 0x20
 end

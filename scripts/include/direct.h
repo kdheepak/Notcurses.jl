@@ -1,7 +1,7 @@
 #ifndef NOTCURSES_DIRECT
 #define NOTCURSES_DIRECT
 
-#include <notcurses.h>
+#include <notcurses/notcurses.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -392,6 +392,12 @@ ncdirect_canquadrant(const struct ncdirect* nc){
 static inline bool
 ncdirect_cansextant(const struct ncdirect* nc){
   return ncdirect_canutf8(nc) && ncdirect_capabilities(nc)->sextants;
+}
+
+// Can we reliably use Unicode 16 octants?
+static inline bool
+ncdirect_canoctant(const struct ncdirect* nc){
+  return ncdirect_canutf8(nc) && ncdirect_capabilities(nc)->octants;
 }
 
 // Can we reliably use Unicode Braille?
